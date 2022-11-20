@@ -9,6 +9,7 @@
                 <a id="btnBroker" class="btn btn-outline-secondary" href="javascript:void(0)">Test Broker</a>
                 <a id="btnAuth" class="btn btn-outline-secondary" href="javascript:void(0)">Test Auth</a>
                 <a id="btnLog" class="btn btn-outline-secondary" href="javascript:void(0)">Test Log</a>
+                <a id="btnEmail" class="btn btn-outline-secondary" href="javascript:void(0)">Test Email</a>
                 <div id="output" class="mt-5" style="outline: 1px solid silver; padding: 2em;">
                     <span class="text-muted">Output shows here...</span>
                 </div>
@@ -36,6 +37,7 @@
         let btnBroker = document.getElementById("btnBroker")
         let btnAuth = document.getElementById("btnAuth")
         let btnLog = document.getElementById("btnLog")
+        let btnEmail = document.getElementById("btnEmail")
         let output = document.getElementById("output")
         let sent = document.getElementById("payload")
         let received = document.getElementById("received")
@@ -119,6 +121,42 @@
                     received.innerHTML = JSON.stringify(data, undefined, 4)
                     if (data.error){
                       output.innerHTML += `<br><strong>Error:</strong> ${data.message}`;
+                    }else{
+                        output.innerHTML += `<br><strong>Response from broker service</strong>: ${data.message}`;
+                    }
+                })
+                .catch ( error => {
+                    output.innerHTML += "<br><br>Error: " + error
+                })
+        })
+
+        btnEmail.addEventListener("click", function() {
+            const payload = {
+                action: 'mail',
+                mail: {
+                    from:"txm@mail.com",
+                    to: "you@there.com",
+                    subject: "Test email",
+                    message: "Hello world"
+                }
+            }
+
+            const headers = new Headers()
+            headers.append("Content-Type", "application/json")
+
+            const body = {
+                method: "POST",
+                body: JSON.stringify(payload),
+                headers: headers
+            }
+
+             fetch("http:\/\/localhost:8080/handle", body)
+                .then(response => response.json())
+                .then(data => {
+                    sent.innerHTML = JSON.stringify(payload, undefined, 4);
+                    received.innerHTML = JSON.stringify(data, undefined, 4)
+                    if (data.error){
+                      console.log(data.message)
                     }else{
                         output.innerHTML += `<br><strong>Response from broker service</strong>: ${data.message}`;
                     }
